@@ -50,30 +50,40 @@ export function FilePicker() {
 
   if (isLoading) {
     return (
-      <Card className="overflow-hidden border-0 shadow-md p-6">
+      <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-xl border-0 rounded-2xl p-8">
         <div className="flex flex-col items-center justify-center py-12">
-          <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="mt-4 text-gray-500 dark:text-gray-400">
+            Loading your files...
+          </p>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-md">
+    <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-xl border-0 rounded-2xl overflow-hidden">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-2">
-            <GoogleDriveIcon className="h-6 w-6" />
-            <h2 className="text-lg font-medium">Google Drive</h2>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <GoogleDriveIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-xl font-semibold dark:text-white">
+              Google Drive
+            </h2>
           </div>
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm" onClick={refreshFiles}>
-              Refresh
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshFiles}
+            className="hover:bg-blue-50 dark:hover:bg-blue-900/30"
+          >
+            Refresh
+          </Button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-6">
           <Breadcrumb
             path={folderPath}
             onBreadcrumbClick={handleBreadcrumbClick}
@@ -103,48 +113,48 @@ export function FilePicker() {
           onToggleSelect={toggleSelectedFile}
         />
 
-        <div className="flex justify-between items-center mt-6">
-          <div className="flex items-center text-sm text-gray-500">
-            <span className="inline-flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1 text-amber-500" />
-              We recommend selecting as few items as needed.
+        <div className="flex justify-between items-center mt-6 pt-6 border-t dark:border-gray-700">
+          <div className="flex items-center text-sm">
+            <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />
+            <span className="text-gray-600 dark:text-gray-300">
+              Select items carefully for optimal performance
             </span>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowConfirmDialog(true)}
               disabled={selectedCount === 0}
+              className="hover:bg-red-50 dark:hover:bg-red-900/30"
             >
               Cancel
             </Button>
             <CreateKBDialog
               selectedFiles={selectedFiles}
-              onSuccess={() => {
-                handleBulkRemove();
-              }}
+              onSuccess={handleBulkRemove}
             />
           </div>
         </div>
       </div>
 
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>Cancel selection?</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-500 dark:text-gray-400">
               Are you sure you want to cancel? Your current selection will be
               lost.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-end">
+          <DialogFooter className="sm:justify-end gap-2">
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               onClick={() => setShowConfirmDialog(false)}
+              className="hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              No, keep selection
+              Keep selection
             </Button>
             <Button
               type="button"
@@ -153,6 +163,7 @@ export function FilePicker() {
                 setShowConfirmDialog(false);
                 handleBulkRemove();
               }}
+              className="bg-blue-600 hover:bg-blue-700"
             >
               Yes, cancel
             </Button>
