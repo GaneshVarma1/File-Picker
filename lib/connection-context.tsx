@@ -1,9 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from './auth-context';
-import { isSignedInToGoogle } from './google-drive-api';
-import { useToast } from '@/hooks/use-toast';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useAuth } from "./auth-context";
+import { isSignedInToGoogle } from "./google-drive-api";
+import { useToast } from "@/hooks/useToast";
 
 interface ConnectionContextType {
   connection: any;
@@ -13,7 +19,9 @@ interface ConnectionContextType {
   refreshConnection: () => Promise<void>;
 }
 
-const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined);
+const ConnectionContext = createContext<ConnectionContextType | undefined>(
+  undefined
+);
 
 export function ConnectionProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -26,45 +34,49 @@ export function ConnectionProvider({ children }: { children: ReactNode }) {
 
   const fetchConnection = async () => {
     if (!isAuthenticated) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Check if signed in to Google
       const isGoogleSignedIn = isSignedInToGoogle();
-      
+
       if (isGoogleSignedIn) {
         // Create a mock connection object for Google Drive
         setConnection({
-          connection_id: 'google-drive-connection',
-          name: 'Google Drive',
+          connection_id: "google-drive-connection",
+          name: "Google Drive",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          connection_provider: 'gdrive'
+          connection_provider: "gdrive",
         });
-        
-        setOrgId('google-drive-org');
+
+        setOrgId("google-drive-org");
       } else {
         toast({
-          title: 'Google Drive Not Connected',
-          description: 'Please sign in to your Google account to access your Drive files.',
-          variant: 'default',
+          title: "Google Drive Not Connected",
+          description:
+            "Please sign in to your Google account to access your Drive files.",
+          variant: "default",
         });
-        
+
         setConnection(null);
         setOrgId(null);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to connect to Google Drive';
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to connect to Google Drive";
       setError(errorMessage);
-      
+
       toast({
-        title: 'Connection Error',
+        title: "Connection Error",
         description: errorMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
-      
+
       setConnection(null);
       setOrgId(null);
     } finally {
@@ -82,11 +94,13 @@ export function ConnectionProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, retryCount]);
 
   const refreshConnection = async () => {
-    setRetryCount(prev => prev + 1);
+    setRetryCount((prev) => prev + 1);
   };
 
   return (
-    <ConnectionContext.Provider value={{ connection, orgId, isLoading, error, refreshConnection }}>
+    <ConnectionContext.Provider
+      value={{ connection, orgId, isLoading, error, refreshConnection }}
+    >
       {children}
     </ConnectionContext.Provider>
   );
@@ -95,7 +109,7 @@ export function ConnectionProvider({ children }: { children: ReactNode }) {
 export function useConnection() {
   const context = useContext(ConnectionContext);
   if (context === undefined) {
-    throw new Error('useConnection must be used within a ConnectionProvider');
+    throw new Error("useConnection must be used within a ConnectionProvider");
   }
   return context;
 }

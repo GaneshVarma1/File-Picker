@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,64 +10,63 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { createKnowledgeBase, syncKnowledgeBase } from '@/lib/api';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { createKnowledgeBase, syncKnowledgeBase } from "@/lib/api";
+import { useToast } from "@/hooks/useToast";
 
 interface CreateKBDialogProps {
   selectedFiles: string[];
   onSuccess: () => void;
 }
 
-export function CreateKBDialog({ selectedFiles, onSuccess }: CreateKBDialogProps) {
+export function CreateKBDialog({
+  selectedFiles,
+  onSuccess,
+}: CreateKBDialogProps) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (selectedFiles.length === 0) {
       toast({
-        title: 'Error',
-        description: 'Please select at least one file to index',
-        variant: 'destructive',
+        title: "Error",
+        description: "Please select at least one file to index",
+        variant: "destructive",
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       // Create knowledge base
-      const kb = await createKnowledgeBase(
-        selectedFiles,
-        name,
-        description
-      );
-      
+      const kb = await createKnowledgeBase(selectedFiles, name, description);
+
       // Sync knowledge base
       await syncKnowledgeBase(kb.knowledge_base_id);
-      
+
       toast({
-        title: 'Success',
-        description: 'Knowledge base created and syncing started',
+        title: "Success",
+        description: "Knowledge base created and syncing started",
       });
-      
+
       setOpen(false);
       onSuccess();
     } catch (error) {
-      console.error('Error creating knowledge base:', error);
+      console.error("Error creating knowledge base:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to create knowledge base. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to create knowledge base. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -86,7 +85,8 @@ export function CreateKBDialog({ selectedFiles, onSuccess }: CreateKBDialogProps
           <DialogHeader>
             <DialogTitle>Create Knowledge Base</DialogTitle>
             <DialogDescription>
-              Create a new knowledge base with the selected files. The files will be indexed and made searchable.
+              Create a new knowledge base with the selected files. The files
+              will be indexed and made searchable.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -116,16 +116,22 @@ export function CreateKBDialog({ selectedFiles, onSuccess }: CreateKBDialogProps
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Files</Label>
               <div className="col-span-3">
-                <p className="text-sm text-gray-500">{selectedFiles.length} files selected</p>
+                <p className="text-sm text-gray-500">
+                  {selectedFiles.length} files selected
+                </p>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Creating...' : 'Create'}
+              {isLoading ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>
